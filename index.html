@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TubeManLive: Your YouTube Live Stream Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for a sleek look in dark theme - Enhanced for vibrancy */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827; /* Darker than gray-900 */
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4F46E5, #EC4899); /* Blend indigo-600 and fuchsia-500 */
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); /* Subtle glow */
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #4338CA, #DB2777); /* Darker on hover */
+        }
+
+        /* Neon/Glow effect for titles and key elements */
+        .text-glow {
+            text-shadow: 0 0 8px rgba(79, 70, 229, 0.7), 0 0 15px rgba(79, 70, 229, 0.5); /* Indigo glow */
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.7), 0 0 15px rgba(6, 182, 212, 0.5); /* Cyan glow */
+        }
+
+        /* Glassmorphism effect */
+        .glass-effect {
+            background-color: rgba(30, 41, 59, 0.3); /* slate-800 with transparency */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.5); /* slate-600 with transparency */
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-down { animation: fadeInDown 0.9s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+        .animate-slide-in-left { animation: slideInLeft 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; animation-delay: 0.4s; }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in-up { animation: slideInUp 0.8s ease-out forwards; animation-delay: 0.6s; }
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+        }
+
+        .feature-icon {
+            @apply text-accent-indigo-light;
+        }
+        .feature-card {
+            @apply glass-effect p-6 rounded-xl shadow-lg border border-gray-700 flex flex-col items-center text-center transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-xl;
+        }
+        .cta-button {
+            @apply inline-flex items-center justify-center bg-gradient-to-r from-accent-indigo to-fuchsia-500 hover:from-accent-indigo-hover hover:to-accent-fuchsia-hover text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-xl focus:outline-none focus:ring-2 focus:ring-accent-indigo focus:ring-offset-2 focus:ring-offset-primary-dark;
+        }
+
+        /* Mockup specific styles */
+        .mockup-container {
+            position: relative;
+            padding: 2rem;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.7));
+            border-radius: 1.5rem;
+            border: 1px solid rgba(71, 85, 105, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden; /* For pseudo-elements */
+        }
+        .mockup-header {
+            background-color: rgba(6, 182, 212, 0.1); /* Cyan tint */
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 0.75rem 0.75rem 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .mockup-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            display: inline-block;
+        }
+        .mockup-dot-red { background-color: #EF4444; }
+        .mockup-dot-yellow { background-color: #FACC15; }
+        .mockup-dot-green { background-color: #22C55E; }
+        .mockup-content {
+            padding: 2rem 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .mockup-content {
+                grid-template-columns: 1fr 2fr;
+            }
+        }
+        .mockup-sidebar-item {
+            background-color: rgba(79, 70, 229, 0.15); /* Indigo tint */
+            padding: 1rem;
+            border-left: 4px solid #4F46E5;
+            border-radius: 0.5rem;
+        }
+        .mockup-chat-message {
+            background-color: rgba(34, 197, 94, 0.15); /* Green tint for positive */
+            padding: 0.75rem 1rem;
+            border-left: 4px solid #22C55E;
+            border-radius: 0.5rem;
+        }
+        .mockup-chat-message.negative {
+            background-color: rgba(79, 20, 20, 0.2); /* Red tint for negative */
+            border-left: 4px solid #EF4444;
+        }
+        .mockup-chat-feed {
+            background-color: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            min-height: 200px;
+            overflow-y: hidden; /* Hide scrollbar for mockup */
+            position: relative;
+        }
+        .mockup-chat-feed::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px; /* Fade out bottom */
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+            pointer-events: none;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#0F172A', /* slate-900 */
+                        'secondary-dark': '#1E293B', /* slate-800 */
+                        'accent-indigo': {
+                            'DEFAULT': '#4F46E5', /* indigo-600 */
+                            'hover': '#4338CA', /* indigo-700 */
+                            'light': '#818CF8', /* indigo-400 */
+                        },
+                        'accent-fuchsia': {
+                            'DEFAULT': '#EC4899', /* fuchsia-500 */
+                            'hover': '#D946EF', /* fuchsia-600 */
+                            'light': '#F472B6', /* fuchsia-400 */
+                        },
+                        'cyan-vibrant': {
+                            'DEFAULT': '#06B6D4', /* cyan-500 */
+                            'light': '#22D3EE', /* cyan-400 */
+                        },
+                        'green-vibrant': {
+                            'DEFAULT': '#22C55E', /* green-500 */
+                        },
+                        'red-vibrant': {
+                            'DEFAULT': '#EF4444', /* red-500 */
+                        },
+                        'slate-neutral': {
+                            'DEFAULT': '#94A3B8', /* slate-400 */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-primary-dark text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <header class="bg-secondary-dark glass-effect py-6 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center">
+            <div class="text-center sm:text-left animate-fade-in-down">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-cyan-vibrant drop-shadow-xl text-glow-cyan">
+                    TubeManLive
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 mt-2 animate-fade-in-up">Your Secret Weapon for YouTube Live Streams!</p>
+            </div>
+            <nav class="mt-4 sm:mt-0 animate-fade-in">
+                <a href="#features" class="text-gray-300 hover:text-accent-indigo transition duration-300 px-3 py-2 rounded-md text-lg font-medium">Features</a>
+                <a href="#how-to-use" class="ml-4 text-gray-300 hover:text-accent-indigo transition duration-300 px-3 py-2 rounded-md text-lg font-medium">How It Works</a>
+                <a href="#dashboard-glance" class="ml-4 text-gray-300 hover:text-accent-indigo transition duration-300 px-3 py-2 rounded-md text-lg font-medium">Dashboard Glance</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="relative bg-cover bg-center py-20 md:py-32" style="background-image: url('https://source.unsplash.com/random/1600x900/?livestream,youtube,neon')">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 animate-fade-in">
+            <p class="text-gray-200 text-lg md:text-xl mb-4">Ever wonder what your audience *really* thinks during your live streams?</p>
+            <h2 class="text-3xl md:text-6xl font-extrabold text-white leading-tight mb-6 text-glow">
+                Get Instant Audience Vibe &amp; Combat Negativity.
+            </h2>
+            <p class="text-gray-300 text-xl md:text-2xl mb-8">
+                TubeManLive is your real-time **sentiment radar** for live chat.
+            </p>
+            <a href="/" class="cta-button">
+                🚀 Go to Dashboard & Start Analyzing!
+            </a>
+        </div>
+    </section>
+
+    <section id="features" class="py-16 bg-primary-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-extrabold text-center text-cyan-vibrant mb-12 text-glow-cyan animate-fade-in-down">
+                ✨ What Makes TubeManLive So Dope?
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card animate-slide-in-left" style="animation-delay: 0.2s;">
+                    <svg class="feature-icon w-16 h-16 mb-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 3H3C2.45 3 2 3.45 2 4v16c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zm-10 14H8V7h3v10zm6 0h-3V7h3v10z"></path></svg>
+                    <h3 class="text-2xl font-bold text-white mb-3">Live Chat Superpower</h3>
+                    <p class="text-gray-300">Watches your live stream chat in real-time, grabbing every comment as it appears. No more guessing what's flying by!</p>
+                </div>
+                <div class="feature-card animate-slide-in-left" style="animation-delay: 0.4s;">
+                    <svg class="feature-icon w-16 h-16 mb-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
+                    <h3 class="text-2xl font-bold text-white mb-3">Vibe Check Master</h3>
+                    <p class="text-gray-300">Instant sentiment analysis: Positive 🟢, Negative 🔴, or Neutral ⚪. Get the vibe of your community instantly.</p>
+                </div>
+                <div class="feature-card animate-slide-in-left" style="animation-delay: 0.6s;">
+                    <svg class="feature-icon w-16 h-16 mb-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg>
+                    <h3 class="text-2xl font-bold text-white mb-3">Audience VIP List</h3>
+                    <p class="text-gray-300">Tracks who is saying what. See your biggest fans and those who might need a time-out.</p>
+                </div>
+                <div class="feature-card animate-slide-in-left" style="animation-delay: 0.8s;">
+                    <svg class="feature-icon w-16 h-16 mb-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h4v-4zm-6 0H7v4h4v-4zm6-6h-4v4h4V7zm-6 0H7v4h4V7z"></path></svg>
+                    <h3 class="text-2xl font-bold text-white mb-3">Dashboard of Awesomeness</h3>
+                    <p class="text-gray-300">Everything's laid out on a clean, real-time dashboard. Your quick glance at chat champions and villains.</p>
+                </div>
+                <div class="feature-card animate-slide-in-left" style="animation-delay: 1.0s;">
+                    <svg class="feature-icon w-16 h-16 mb-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+                    <h3 class="text-2xl font-bold text-white mb-3">Seriously Easy Setup</h3>
+                    <p class="text-gray-300">Copy a YouTube live URL, paste it in, hit "Start," and boom – you're a chat analysis pro.</p>
+                </div>
+                <div class="feature-card animate-slide-in-left" style="animation-delay: 1.2s;">
+                    <svg class="feature-icon w-16 h-16 mb-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+                    <h3 class="text-2xl font-bold text-white mb-3">Stress-Free Moderation</h3>
+                    <p class="text-300">Helps your mods focus on flagged messages, making moderation efficient and less stressful.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-secondary-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-extrabold text-cyan-vibrant mb-12 text-glow-cyan animate-fade-in-down">
+                🔥 Why Every Live YouTuber NEEDS TubeManLive!
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
+                <div class="p-6 glass-effect rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.2s;">
+                    <h3 class="text-2xl font-bold text-accent-fuchsia mb-4 flex items-center"><span class="mr-3 text-3xl">🧠</span> Real-Time Audience Super-Sense</h3>
+                    <p class="text-gray-300">Imagine knowing the exact moment your audience gets excited, bored, or annoyed. TubeManLive gives you that sixth sense. Did a joke land? Is this topic a hit or a miss? You'll know immediately and can **adjust your content on the fly** to keep everyone engaged.</p>
+                </div>
+                <div class="p-6 glass-effect rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.4s;">
+                    <h3 class="text-2xl font-bold text-red-vibrant mb-4 flex items-center"><span class="mr-3 text-3xl">🚫</span> Your Personal Bouncer for Bad Vibes</h3>
+                    <p class="text-gray-300">Live chat can get wild. Spam, trolls, negativity... it happens. TubeManLive acts like your personal bouncer, **highlighting problematic comments and authors in real-time**. This means you (or your mods) can take action way faster, keeping your chat a positive, welcoming space. No more wading through hundreds of messages to find the one causing trouble!</p>
+                </div>
+                <div class="p-6 glass-effect rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.6s;">
+                    <h3 class="text-2xl font-bold text-green-vibrant mb-4 flex items-center"><span class="mr-3 text-3xl">✨</span> Spotlight Your True Fans</h3>
+                    <p class="text-gray-300">It's tough to see every "I love you!" message in a fast-moving chat. TubeManLive helps you **identify your most positive and supportive viewers** instantly. Shout them out, engage with them, and build an even stronger community.</p>
+                </div>
+                <div class="p-6 glass-effect rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.8s;">
+                    <h3 class="text-2xl font-bold text-accent-indigo mb-4 flex items-center"><span class="mr-3 text-3xl">📈</span> Data-Driven Stream Growth</h3>
+                    <p class="text-gray-300">Beyond just moderation, the insights from TubeManLive's dashboard let you understand what resonates with your audience. See trends in sentiment, identify popular topics, and use this data to **grow your channel and improve your content strategy**.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    ---
+
+    <section id="dashboard-glance" class="py-16 bg-primary-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-extrabold text-cyan-vibrant mb-12 text-glow-cyan animate-fade-in-down">
+                👀 A Quick Glance at Your Live Dashboard
+            </h2>
+            <p class="text-gray-400 text-lg md:text-xl mb-8 animate-fade-in-up">
+                See how TubeManLive brings clarity to your live chat with a powerful, intuitive interface.
+            </p>
+
+            <div class="mockup-container glass-effect animate-fade-in" style="animation-delay: 0.6s;">
+                <div class="mockup-header text-gray-400 font-semibold text-sm">
+                    <div class="flex items-center">
+                        <span class="mockup-dot mockup-dot-red"></span>
+                        <span class="mockup-dot mockup-dot-yellow"></span>
+                        <span class="mockup-dot mockup-dot-green"></span>
+                    </div>
+                    <span>TubeManLive Dashboard - Live Stream Monitor</span>
+                    <span><svg class="w-4 h-4 inline-block ml-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7.05 6.293a1 1 0 00-1.414 1.414L8.586 10l-2.95 2.95a1 1 0 101.414 1.414L10 11.414l2.95 2.95a1 1 0 001.414-1.414L11.414 10l2.95-2.95a1 1 0 00-1.414-1.414L10 8.586 7.05 6.293z" clip-rule="evenodd"></path></svg></span>
+                </div>
+                <div class="mockup-content">
+                    <div class="flex flex-col gap-4">
+                        <div class="mockup-sidebar-item">
+                            <p class="text-lg font-bold text-accent-indigo">Stream Status:</p>
+                            <p class="text-green-vibrant font-semibold">🟢 Active</p>
+                            <p class="text-sm text-gray-500 truncate">URL: youtube.com/watch?v=livestreamID</p>
+                        </div>
+                        <div class="mockup-sidebar-item">
+                            <p class="text-lg font-bold text-accent-fuchsia">Total Messages:</p>
+                            <p class="text-cyan-vibrant text-3xl font-extrabold">2,451</p>
+                        </div>
+                        <div class="mockup-sidebar-item">
+                            <p class="text-lg font-bold text-red-vibrant">Negative Messages:</p>
+                            <p class="text-red-vibrant text-3xl font-extrabold">12</p>
+                        </div>
+                    </div>
+
+                    <div class="mockup-chat-feed">
+                        <div class="chat-message mockup-chat-message animate-message-appear">
+                            <p class="text-sm text-gray-400 mb-1"><strong>UserXYZ:</strong></p>
+                            <p>This stream is awesome! Loving the content. 💚</p>
+                        </div>
+                        <div class="chat-message mockup-chat-message negative animate-message-appear" style="animation-delay: 0.1s;">
+                            <p class="text-sm text-gray-400 mb-1"><strong>HaterBot99:</strong></p>
+                            <p>Too boring. When will it end? 👎</p>
+                        </div>
+                        <div class="chat-message mockup-chat-message animate-message-appear" style="animation-delay: 0.2s;">
+                            <p class="text-sm text-gray-400 mb-1"><strong>StreamFan1:</strong></p>
+                            <p>Great points being made here!</p>
+                        </div>
+                        <div class="chat-message mockup-chat-message negative animate-message-appear" style="animation-delay: 0.3s;">
+                            <p class="text-sm text-gray-400 mb-1"><strong>AnonUser:</strong></p>
+                            <p>Your audio is terrible. Fix it.</p>
+                        </div>
+                        <div class="chat-message mockup-chat-message animate-message-appear" style="animation-delay: 0.4s;">
+                            <p class="text-sm text-gray-400 mb-1"><strong>HappyViewer:</strong></p>
+                            <p>So insightful, thank you for this stream!</p>
+                        </div>
+                        <div class="chat-message mockup-chat-message animate-message-appear" style="animation-delay: 0.5s;">
+                            <p class="text-sm text-gray-400 mb-1"><strong>ChattyPatty:</strong></p>
+                            <p>Anyone else excited for the next topic?</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-right text-xs mt-4"><em>(This is a simulated view of the dashboard)</em></p>
+            </div>
+            <a href="/" class="cta-button mt-12 animate-fade-in-up">
+                Experience the Full Dashboard Now!
+            </a>
+        </div>
+    </section>
+
+    ---
+
+    <section id="how-to-use" class="py-16 bg-primary-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-extrabold text-center text-cyan-vibrant mb-12 text-glow-cyan animate-fade-in-down">
+                ⚙️ How TubeManLive Works Its Magic
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="glass-effect p-8 rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.2s;">
+                    <div class="text-accent-indigo text-6xl mb-4 font-bold">1</div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Paste Your URL</h3>
+                    <p class="text-gray-300">Just grab the link to your live YouTube stream and paste it into the input field on the dashboard.</p>
+                </div>
+                <div class="glass-effect p-8 rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.4s;">
+                    <div class="text-accent-fuchsia text-6xl mb-4 font-bold">2</div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Hit "Start Stream"</h3>
+                    <p class="text-gray-300">Click the magic button. TubeManLive will fire up its engines (powered by Selenium) and begin monitoring your chat.</p>
+                </div>
+                <div class="glass-effect p-8 rounded-xl shadow-lg border border-gray-700 animate-slide-in-up" style="animation-delay: 0.6s;">
+                    <div class="text-cyan-vibrant text-6xl mb-4 font-bold">3</div>
+                    <h3 class="text-2xl font-bold text-white mb-3">Watch the Insights Flow!</h3>
+                    <p class="text-gray-300">See messages appear in real-time, instantly categorized by sentiment. Your metrics and author lists update live!</p>
+                </div>
+            </div>
+            <div class="text-center mt-12">
+                <p class="text-gray-400 text-lg mb-6">Ready to take control of your live stream's vibe?</p>
+                <a href="https://github.com/Suresh-pyhobbyist/tubemanlive" class="cta-button">
+                   Github -> Get Started with TubeManLive!
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-sm text-gray-600 mt-12 text-center pb-4 w-full max-w-screen-2xl">
+        <p class="mb-2">Powered by <strong class="text-cyan-vibrant">Flask</strong>, <strong class="text-cyan-vibrant">Selenium</strong>, <strong class="text-cyan-vibrant">SpaCy</strong>, and <strong class="text-cyan-vibrant">TextBlob</strong>.</p>
+        <p class="text-gray-700"><strong>Note:</strong> Selenium runs a browser in headless mode. Ensure Chrome and ChromeDriver are installed and compatible.</p>
+    </footer>
+
+</body>
+</html>
