@@ -34,10 +34,23 @@ Simply put, **TubeManLive** turns your live chat into an actionable feedback loo
 
 Ready to supercharge your live streams? Here’s how to get TubeManLive up and running:
 
+Since you're using TubeManLive, the Chrome version being referred to is the one that TubeManLive interacts with.
+
+You're using **Chrome version 137.0.7151.70** with TubeManLive.
+Understood! So you're using a specific Chrome version for your testing.
+
+Here's what you'll need, keeping it simple:
+
+---
+
 ### 📋 What You'll Need
 
-  * **Python 3.x**: Grab it from [python.org](https://www.python.org/downloads/).
-  * **Google Chrome Browser**: Selenium needs it to do its magic.
+* **Python 3.x**: Get it from [python.org/downloads](https://www.python.org/downloads/).
+* **Google Chrome Browser**: You need Chrome installed. Download it from [google.com/chrome](https://www.google.com/chrome/).
+    * **I'm using Chrome version 137.0.7151.70.**
+* **ChromeDriver**: Since you're using Chrome version **137.0.7151.70**, you'll need the matching ChromeDriver.
+    * If you have **Selenium 4.6 or newer**, it should handle downloading the correct driver for you automatically.
+    * Otherwise, you'll need to manually download ChromeDriver version 137.0.7151.70 from [googlechromelabs.github.io/chrome-for-testing/](https://googlechromelabs.github.io/chrome-for-testing/).
 
 ### 📦 Quick Setup
 
