@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Live Chat - GetDownHaters Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Custom scrollbar for a sleek look in dark theme - Enhanced for vibrancy */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827; /* Darker than gray-900 */
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4F46E5, #EC4899); /* Blend indigo-600 and fuchsia-500 */
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); /* Subtle glow */
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #4338CA, #DB2777); /* Darker on hover */
+        }
+
+        /* Base styling for chat display */
+        .chat-feed {
+            max-height: 500px;
+            min-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse; /* New messages appear at the bottom */
+            padding: 1rem; /* More generous padding */
+            gap: 0.75rem; /* Space between messages */
+        }
+
+        /* Specific styles for message sentiment borders and backgrounds - Enhanced for contrast */
+        .chat-message {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border-left: 6px solid transparent; /* Thicker border */
+            transition: all 0.3s ease-in-out;
+            background-clip: padding-box; /* Ensures border is distinct from background */
+        }
+        .chat-message.negative {
+            border-left-color: #EF4444; /* red-500 */
+            background-color: rgba(79, 20, 20, 0.5); /* Semi-transparent dark red */
+        }
+        .chat-message.negative:hover {
+            background-color: rgba(79, 20, 20, 0.7);
+            transform: translateY(-2px); /* Lift effect */
+        }
+        .chat-message.positive {
+            border-left-color: #22C55E; /* green-500 */
+            background-color: rgba(20, 79, 20, 0.5); /* Semi-transparent dark green */
+        }
+        .chat-message.positive:hover {
+            background-color: rgba(20, 79, 20, 0.7);
+            transform: translateY(-2px);
+        }
+        .chat-message.neutral {
+            border-left-color: #94A3B8; /* slate-400 */
+            background-color: rgba(43, 50, 60, 0.5); /* Semi-transparent dark neutral */
+        }
+        .chat-message.neutral:hover {
+            background-color: rgba(43, 50, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Status indicators */
+        .status-active {
+            color: #22c55e; /* green-500 */
+            font-weight: bold;
+            animation: pulse-green 1.5s infinite; /* Added pulse animation */
+        }
+        .status-inactive {
+            color: #facc15; /* yellow-400 */
+            font-weight: bold;
+        }
+
+        /* Neon/Glow effect for titles and key elements */
+        .text-glow {
+            text-shadow: 0 0 8px rgba(79, 70, 229, 0.7), 0 0 15px rgba(79, 70, 229, 0.5); /* Indigo glow */
+        }
+        .text-glow-cyan {
+             text-shadow: 0 0 8px rgba(6, 182, 212, 0.7), 0 0 15px rgba(6, 182, 212, 0.5); /* Cyan glow */
+        }
+
+        /* Glassmorphism effect */
+        .glass-effect {
+            background-color: rgba(30, 41, 59, 0.3); /* slate-800 with transparency */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.5); /* slate-600 with transparency */
+        }
+
+        /* Keyframe Animations (tuned for smoother appearance) */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-down { animation: fadeInDown 0.9s ease-out forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.9s ease-out forwards; }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: translateX(0); } }
+        .animate-slide-in-left { animation: slideInLeft 0.8s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; animation-delay: 0.4s; }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-in-up { animation: slideInUp 0.8s ease-out forwards; animation-delay: 0.6s; }
+        @keyframes messageAppear { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-message-appear { animation: messageAppear 0.4s ease-out forwards; }
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+        }
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#0F172A', /* slate-900 */
+                        'secondary-dark': '#1E293B', /* slate-800 */
+                        'accent-indigo': {
+                            'DEFAULT': '#4F46E5', /* indigo-600 */
+                            'hover': '#4338CA', /* indigo-700 */
+                            'light': '#818CF8', /* indigo-400 */
+                        },
+                        'accent-fuchsia': {
+                            'DEFAULT': '#EC4899', /* fuchsia-500 */
+                            'hover': '#D946EF', /* fuchsia-600 */
+                            'light': '#F472B6', /* fuchsia-400 */
+                        },
+                        'cyan-vibrant': {
+                            'DEFAULT': '#06B6D4', /* cyan-500 */
+                            'light': '#22D3EE', /* cyan-400 */
+                        },
+                        'green-vibrant': {
+                            'DEFAULT': '#22C55E', /* green-500 */
+                        },
+                        'red-vibrant': {
+                            'DEFAULT': '#EF4444', /* red-500 */
+                        },
+                        'slate-neutral': {
+                            'DEFAULT': '#94A3B8', /* slate-400 */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-primary-dark text-gray-100 p-4 sm:p-8 font-sans antialiased min-h-screen flex flex-col items-center">
+
+    <div class="max-w-screen-2xl mx-auto w-full flex flex-col lg:flex-row gap-8 py-8 px-4 sm:px-6 md:px-8">
+
+        <div class="flex flex-col gap-8 w-full lg:w-1/3">
+
+            <header class="text-center mb-6 lg:mb-0 animate-fade-in-down">
+                <h1 class="text-2xl md:text-5xl font-extrabold text-cyan-vibrant drop-shadow-xl text-glow-cyan">
+                    Tubemanlive
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-400 mt-3 animate-fade-in-up">Real-time Insights</p>
+            </header>
+
+            <div class="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 animate-slide-in-left flex flex-col gap-6">
+                <h2 class="text-3xl sm:text-4xl font-bold text-accent-indigo-light border-b-2 border-accent-indigo pb-4 text-center text-glow">Monitor Stream</h2>
+                <label for="videoUrlInput" class="block text-gray-300 text-lg font-semibold mb-2">
+                    YouTube Live Video URL:
+                </label>
+                <input type="text" id="videoUrlInput" class="w-full p-3 rounded-lg bg-secondary-dark text-gray-100 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-indigo focus:ring-offset-2 focus:ring-offset-primary-dark placeholder-gray-500 text-base" placeholder="Paste YouTube Live URL here..." autocomplete="off" value="{{ current_video_url }}">
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="startButton" class="flex-1 bg-gradient-to-r from-accent-indigo to-fuchsia-500 hover:from-accent-indigo-hover hover:to-accent-fuchsia-hover text-white font-bold py-3.5 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-xl focus:outline-none focus:ring-2 focus:ring-accent-indigo focus:ring-offset-2 focus:ring-offset-primary-dark flex items-center justify-center text-lg">
+                        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"></path></svg>
+                        Start Stream
+                    </button>
+                    <button id="stopButton" class="flex-1 bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 text-white font-bold py-3.5 px-6 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-primary-dark flex items-center justify-center text-lg" disabled>
+                        <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 6h12v12H6z"></path></svg>
+                        Stop Stream
+                    </button>
+                </div>
+                <div class="mt-4 text-center">
+                    <p class="text-lg font-medium mb-2">
+                        Scraper Status: <span id="scrapingStatus" class="status-inactive">Inactive</span>
+                    </p>
+                    <p class="text-sm text-gray-500 truncate break-all">
+                        Currently Monitoring: <span id="currentVideoUrl" class="text-gray-400">None</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 animate-slide-in-up">
+                <h2 class="text-3xl sm:text-4xl font-bold text-accent-fuchsia-light mb-6 border-b-2 border-accent-fuchsia pb-4 text-center text-glow">Real-time Metrics</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xl">
+                    <div class="flex flex-col items-center glass-effect p-4 rounded-lg border border-gray-700 hover:border-cyan-vibrant transition duration-200 shadow-md">
+                        <span class="text-gray-300 mb-1">Total Messages:</span>
+                        <span id="totalMessages" class="font-extrabold text-cyan-vibrant text-5xl">0</span>
+                    </div>
+                    <div class="flex flex-col items-center glass-effect p-4 rounded-lg border border-gray-700 hover:border-green-vibrant transition duration-200 shadow-md">
+                        <span class="text-gray-300 mb-1">Positive:</span>
+                        <span id="positiveMessages" class="font-extrabold text-green-vibrant text-5xl">0</span>
+                    </div>
+                    <div class="flex flex-col items-center glass-effect p-4 rounded-lg border border-gray-700 hover:border-red-vibrant transition duration-200 shadow-md">
+                        <span class="text-gray-300 mb-1">Negative:</span>
+                        <span id="negativeMessages" class="font-extrabold text-red-vibrant text-5xl">0</span>
+                    </div>
+                    <div class="flex flex-col items-center glass-effect p-4 rounded-lg border border-gray-700 hover:border-slate-neutral transition duration-200 shadow-md">
+                        <span class="text-gray-300 mb-1">Neutral:</span>
+                        <span id="neutralMessages" class="font-extrabold text-slate-neutral text-5xl">0</span>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-6 text-right">Last Updated: <span id="lastUpdate" class="font-mono text-gray-500">N/A</span></p>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-8 w-full lg:w-2/3">
+
+            <div class="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-700 flex flex-col flex-grow animate-fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold text-cyan-vibrant-light mb-6 border-b-2 border-gray-700 pb-4 text-center text-glow-cyan">Live Chat Feed</h2>
+                <div id="liveChatFeed" class="chat-feed bg-secondary-dark p-4 rounded-lg flex-grow border border-gray-800 shadow-inner">
+                    <p class="no-messages text-gray-600 text-center py-10 text-xl font-medium">
+                        Enter a YouTube Live Video URL to begin monitoring the chat.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-effect p-6 rounded-2xl shadow-2xl border border-gray-700 animate-slide-in-up">
+                    <h3 class="text-2xl font-bold text-accent-indigo-light mb-4 border-b border-accent-indigo pb-3 text-center text-glow">Sentiment Distribution</h3>
+                    <div class="flex justify-center items-center h-56 sm:h-72">
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-effect p-6 rounded-2xl shadow-2xl border border-gray-700 animate-slide-in-up">
+                    <h3 class="text-2xl font-bold text-accent-fuchsia-light mb-4 border-b border-accent-fuchsia pb-3 text-center text-glow">Prominent Authors</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <h4 class="text-xl font-semibold text-red-vibrant mb-2">Negative Authors (<span id="negativeAuthorsCount">0</span>)</h4>
+                            <ul id="negativeAuthorsList" class="authors-list bg-secondary-dark p-3 rounded-lg border border-red-700 h-28 overflow-y-auto shadow-inner">
+                                <li class="text-gray-600 text-center py-2 text-base">No negative authors yet.</li>
+                            </ul>
+                            <button id="downloadNegativeAuthorsBtn" class="mt-3 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center text-md shadow-md hover:shadow-lg">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414zM10 3a1 1 0 011 1v7a1 1 0 11-2 0V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                                Download Negative Authors
+                            </button>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-green-vibrant mb-2">Positive Authors (<span id="positiveAuthorsCount">0</span>)</h4>
+                            <ul id="positiveAuthorsList" class="authors-list bg-secondary-dark p-3 rounded-lg border border-green-700 h-28 overflow-y-auto shadow-inner">
+                                <li class="text-gray-600 text-center py-2 text-base">No positive authors yet.</li>
+                            </ul>
+                            <button id="downloadPositiveAuthorsBtn" class="mt-3 w-full bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out flex items-center justify-center text-md shadow-md hover:shadow-lg">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414zM10 3a1 1 0 011 1v7a1 1 0 11-2 0V4a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                                Download Positive Authors
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-sm text-gray-600 mt-12 text-center pb-4 w-full max-w-screen-2xl">
+        <p class="mb-2">Powered by <strong class="text-cyan-vibrant">Flask</strong>, <strong class="text-cyan-vibrant">Selenium</strong>, <strong class="text-cyan-vibrant">SpaCy</strong>, and <strong class="text-cyan-vibrant">TextBlob</strong>.</p>
+        <p class="text-gray-700"><strong>Note:</strong> Selenium runs a browser in headless mode. Ensure Chrome and ChromeDriver are installed and compatible.</p>
+        <p class="text-red-vibrant mt-3 font-semibold">
+            <strong class="text-red-vibrant">Important:</strong> Messages with a red left border are flagged for potential negative sentiment.
+        </p>
+        <p class="text-green-vibrant mt-1 font-semibold">
+            <strong class="text-green-vibrant">Important:</strong> Messages with a green left border are flagged for potential positive sentiment.
+            Accuracy depends on the sentiment model.
+        </p>
+        <p class="text-slate-neutral mt-1 font-semibold">
+            <strong class="text-slate-neutral">Note:</strong> Messages with a grey left border are considered neutral.
+        </p>
+    </footer>
+
+       <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+</body>
+</html>
