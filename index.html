@@ -6,40 +6,40 @@
     <title>TubeManLive: Your YouTube Live Stream Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom scrollbar for a sleek look in dark theme - Enhanced for vibrancy */
+        / Custom scrollbar for a sleek look in dark theme - Enhanced for vibrancy /
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: #111827; /* Darker than gray-900 */
+            background: #111827; / Darker than gray-900 /
             border-radius: 5px;
         }
         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #4F46E5, #EC4899); /* Blend indigo-600 and fuchsia-500 */
+            background: linear-gradient(135deg, #4F46E5, #EC4899); / Blend indigo-600 and fuchsia-500 /
             border-radius: 5px;
-            box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); /* Subtle glow */
+            box-shadow: 0 0 8px rgba(79, 70, 229, 0.5); / Subtle glow /
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #4338CA, #DB2777); /* Darker on hover */
+            background: linear-gradient(135deg, #4338CA, #DB2777); / Darker on hover /
         }
 
-        /* Neon/Glow effect for titles and key elements */
+        / Neon/Glow effect for titles and key elements /
         .text-glow {
-            text-shadow: 0 0 8px rgba(79, 70, 229, 0.7), 0 0 15px rgba(79, 70, 229, 0.5); /* Indigo glow */
+            text-shadow: 0 0 8px rgba(79, 70, 229, 0.7), 0 0 15px rgba(79, 70, 229, 0.5); / Indigo glow /
         }
         .text-glow-cyan {
-            text-shadow: 0 0 8px rgba(6, 182, 212, 0.7), 0 0 15px rgba(6, 182, 212, 0.5); /* Cyan glow */
+            text-shadow: 0 0 8px rgba(6, 182, 212, 0.7), 0 0 15px rgba(6, 182, 212, 0.5); / Cyan glow /
         }
 
-        /* Glassmorphism effect */
+        / Glassmorphism effect /
         .glass-effect {
-            background-color: rgba(30, 41, 59, 0.3); /* slate-800 with transparency */
+            background-color: rgba(30, 41, 59, 0.3); / slate-800 with transparency /
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(71, 85, 105, 0.5); /* slate-600 with transparency */
+            border: 1px solid rgba(71, 85, 105, 0.5); / slate-600 with transparency /
         }
 
-        /* Keyframe Animations */
+        / Keyframe Animations /
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-down { animation: fadeInDown 0.9s ease-out forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -64,7 +64,7 @@
             @apply inline-flex items-center justify-center bg-gradient-to-r from-accent-indigo to-fuchsia-500 hover:from-accent-indigo-hover hover:to-accent-fuchsia-hover text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-xl focus:outline-none focus:ring-2 focus:ring-accent-indigo focus:ring-offset-2 focus:ring-offset-primary-dark;
         }
 
-        /* Mockup specific styles */
+        / Mockup specific styles /
         .mockup-container {
             position: relative;
             padding: 2rem;
@@ -72,10 +72,10 @@
             border-radius: 1.5rem;
             border: 1px solid rgba(71, 85, 105, 0.6);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden; /* For pseudo-elements */
+            overflow: hidden; / For pseudo-elements /
         }
         .mockup-header {
-            background-color: rgba(6, 182, 212, 0.1); /* Cyan tint */
+            background-color: rgba(6, 182, 212, 0.1); / Cyan tint /
             padding: 0.75rem 1.5rem;
             border-bottom: 1px solid rgba(6, 182, 212, 0.3);
             border-radius: 0.75rem 0.75rem 0 0;
@@ -105,19 +105,19 @@
             }
         }
         .mockup-sidebar-item {
-            background-color: rgba(79, 70, 229, 0.15); /* Indigo tint */
+            background-color: rgba(79, 70, 229, 0.15); / Indigo tint /
             padding: 1rem;
             border-left: 4px solid #4F46E5;
             border-radius: 0.5rem;
         }
         .mockup-chat-message {
-            background-color: rgba(34, 197, 94, 0.15); /* Green tint for positive */
+            background-color: rgba(34, 197, 94, 0.15); / Green tint for positive /
             padding: 0.75rem 1rem;
             border-left: 4px solid #22C55E;
             border-radius: 0.5rem;
         }
         .mockup-chat-message.negative {
-            background-color: rgba(79, 20, 20, 0.2); /* Red tint for negative */
+            background-color: rgba(79, 20, 20, 0.2); / Red tint for negative /
             border-left: 4px solid #EF4444;
         }
         .mockup-chat-feed {
@@ -125,7 +125,7 @@
             padding: 1rem;
             border-radius: 0.75rem;
             min-height: 200px;
-            overflow-y: hidden; /* Hide scrollbar for mockup */
+            overflow-y: hidden; / Hide scrollbar for mockup /
             position: relative;
         }
         .mockup-chat-feed::after {
@@ -134,7 +134,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 50px; /* Fade out bottom */
+            height: 50px; / Fade out bottom /
             background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
             pointer-events: none;
         }
@@ -144,30 +144,30 @@
             theme: {
                 extend: {
                     colors: {
-                        'primary-dark': '#0F172A', /* slate-900 */
-                        'secondary-dark': '#1E293B', /* slate-800 */
+                        'primary-dark': '#0F172A', / slate-900 /
+                        'secondary-dark': '#1E293B', / slate-800 /
                         'accent-indigo': {
-                            'DEFAULT': '#4F46E5', /* indigo-600 */
-                            'hover': '#4338CA', /* indigo-700 */
-                            'light': '#818CF8', /* indigo-400 */
+                            'DEFAULT': '#4F46E5', / indigo-600 /
+                            'hover': '#4338CA', / indigo-700 /
+                            'light': '#818CF8', / indigo-400 /
                         },
                         'accent-fuchsia': {
-                            'DEFAULT': '#EC4899', /* fuchsia-500 */
-                            'hover': '#D946EF', /* fuchsia-600 */
-                            'light': '#F472B6', /* fuchsia-400 */
+                            'DEFAULT': '#EC4899', / fuchsia-500 /
+                            'hover': '#D946EF', / fuchsia-600 /
+                            'light': '#F472B6', / fuchsia-400 /
                         },
                         'cyan-vibrant': {
-                            'DEFAULT': '#06B6D4', /* cyan-500 */
-                            'light': '#22D3EE', /* cyan-400 */
+                            'DEFAULT': '#06B6D4', / cyan-500 /
+                            'light': '#22D3EE', / cyan-400 /
                         },
                         'green-vibrant': {
-                            'DEFAULT': '#22C55E', /* green-500 */
+                            'DEFAULT': '#22C55E', / green-500 /
                         },
                         'red-vibrant': {
-                            'DEFAULT': '#EF4444', /* red-500 */
+                            'DEFAULT': '#EF4444', / red-500 /
                         },
                         'slate-neutral': {
-                            'DEFAULT': '#94A3B8', /* slate-400 */
+                            'DEFAULT': '#94A3B8', / slate-400 /
                         }
                     }
                 }
@@ -196,7 +196,7 @@
     <section class="relative bg-cover bg-center py-20 md:py-32" style="background-image: url('https://source.unsplash.com/random/1600x900/?livestream,youtube,neon')">
         <div class="absolute inset-0 bg-black opacity-60"></div>
         <div class="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 animate-fade-in">
-            <p class="text-gray-200 text-lg md:text-xl mb-4">Ever wonder what your audience *really* thinks during your live streams?</p>
+            <p class="text-gray-200 text-lg md:text-xl mb-4">Ever wonder what your audience really thinks during your live streams?</p>
             <h2 class="text-3xl md:text-6xl font-extrabold text-white leading-tight mb-6 text-glow">
                 Get Instant Audience Vibe & Combat Negativity.
             </h2>
@@ -346,7 +346,7 @@
         </div>
     </section>
 
-    ---
+    
     <section id="our-mission" class="py-16 bg-secondary-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-4xl font-extrabold text-cyan-vibrant mb-12 text-glow-cyan animate-fade-in-down">
@@ -365,7 +365,7 @@
             </div>
         </div>
     </section>
-    ---
+    
 
     <section id="how-to-use" class="py-16 bg-primary-dark">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
